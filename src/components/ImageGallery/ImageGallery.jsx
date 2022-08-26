@@ -7,20 +7,23 @@ export class ImageGallery extends PureComponent {
   state = {
     query: null,
     data: null,
-    loading: false,
     error: null,
     status: "idle",
   };
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
-      this.setState({ loading: true, data: null });
+      this.setState({ status: "pending" });
       setTimeout(() => {
         fetchData(this.props.query)
           .then(({ data }) => {
-            this.setState({ data: data.hits, query: this.props.query });
+            this.setState({
+              data: data.hits,
+              query: this.props.query,
+              status: "resolved",
+            });
           })
-          .catch((error) => this.setState({ error }))
-          .finally(() => this.setState({ loading: false }));
+          .catch((error) => this.setState({ error, status: "rejected" }));
+
         debugger;
       }, 1000);
     }
@@ -35,32 +38,21 @@ export class ImageGallery extends PureComponent {
     ));
   };
   render() {
-    const { loading, error, data } = this.state;
-    // if (status === "idle"){
-    //   return <div>vedid</div>
-    // }
+    const { status } = this.state;
+    if (status === "idle") {
+      return <h1>vedid</h1>;
+    }
 
-    // if (status === "pending"){
-    //   return <div>vedid</div>
-    // }
+    if (status === "pending") {
+      return <Loader></Loader>;
+    }
 
-    // if (status === "rejected"){
-    //   return <div>vedid</div>
-    // }
+    if (status === "rejected") {
+      return <h1>Not found</h1>;
+    }
 
-    // if (status === "resolve"){
-    //   return <div>vedid</div>
-    // }
-    return (
-      <>
-        {loading && <Loader></Loader>}
-        {error && <h1>Not found</h1>}
-
-        <SC.ImageGallery>
-          {!this.props.query && <div>vedid</div>}
-          {data && this.createItems()}
-        </SC.ImageGallery>
-      </>
-    );
+    if (status === "resolved") {
+      return <SC.ImageGallery>{this.createItems()}</SC.ImageGallery>;
+    }
   }
 }
