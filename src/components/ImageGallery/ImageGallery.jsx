@@ -5,7 +5,6 @@ import { fetchData } from "../../api/fetchData";
 import { Loader } from "../Loader/Loader";
 export class ImageGallery extends PureComponent {
   state = {
-    query: null,
     data: null,
     error: null,
     status: "idle",
@@ -13,19 +12,15 @@ export class ImageGallery extends PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
       this.setState({ status: "pending" });
-      setTimeout(() => {
-        fetchData(this.props.query)
-          .then(({ data }) => {
-            this.setState({
-              data: data.hits,
-              query: this.props.query,
-              status: "resolved",
-            });
-          })
-          .catch((error) => this.setState({ error, status: "rejected" }));
 
-        debugger;
-      }, 1000);
+      fetchData(this.props.query)
+        .then(({ data }) => {
+          this.setState({
+            data: data.hits,
+            status: "resolved",
+          });
+        })
+        .catch((error) => this.setState({ error, status: "rejected" }));
     }
   }
   createItems = () => {
@@ -38,9 +33,9 @@ export class ImageGallery extends PureComponent {
     ));
   };
   render() {
-    const { status } = this.state;
+    const { error, status } = this.state;
     if (status === "idle") {
-      return <h1>vedid</h1>;
+      return <h1>{error}</h1>;
     }
 
     if (status === "pending") {
