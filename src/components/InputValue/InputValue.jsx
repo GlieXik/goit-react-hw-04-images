@@ -1,13 +1,6 @@
 import { PureComponent } from "react";
 import { InputValueS } from "./InputValue.styled";
 export class InputValue extends PureComponent {
-  state = {
-    query: "",
-  };
-  handleChenge = (event) => {
-    this.setState({ query: event.currentTarget.value.toLowerCase() });
-  };
-
   render() {
     return (
       <>
@@ -15,9 +8,9 @@ export class InputValue extends PureComponent {
           type="text"
           autocomplete="off"
           autoFocus
-          value={this.state.query}
-          onChange={this.handleChenge}
           placeholder="Search images and photos"
+          value={this.props.value}
+          onChange={this.props.onChange}
         />
         ;
       </>

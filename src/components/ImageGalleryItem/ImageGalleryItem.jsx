@@ -1,7 +1,13 @@
-export const ImageGalleryItem = () => (
+import * as SC from "./ImageGalleryItem.styled";
+
+export const ImageGalleryItem = ({
+  previewURL,
+  largeImageURL,
+  ...restProps
+}) => (
   <>
-    <li class="gallery-item">
-      <img src="" alt="" />
-    </li>
+    <SC.ImageGalleryItem>
+      <SC.ImageGalleryItemImage src={previewURL} alt="" {...restProps} />
+    </SC.ImageGalleryItem>
   </>
 );
