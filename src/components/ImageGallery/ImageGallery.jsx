@@ -7,7 +7,7 @@ import { ButtonMore } from "../Buttons/ButtonMore";
 
 export class ImageGallery extends PureComponent {
   state = {
-    data: null,
+    data: [],
     error: null,
     status: "idle",
     page: 1,
@@ -19,19 +19,13 @@ export class ImageGallery extends PureComponent {
       page: prevState.page + 1,
     }));
   };
-  componentDidUpdate(prevProps, prevState) {
-    if (
-      prevState.page !== this.state.page ||
-      prevProps.query !== this.props.query
-    ) {
-      this.setState({ status: "pending", page: 1 });
 
-      fetchData(this.props.query, this.state.page)
+  componentDidUpdate(prevProps, prevState) {
+    if (prevProps.query !== this.props.query) {
+      this.setState({ status: "pending", page: 1 });
+      console.log("mount");
+      fetchData(this.props.query)
         .then(({ data }) => {
-          // this.setState({
-          //   data: data.hits,
-          //   status: "resolved",
-          // });
           this.setState((prevState) => ({
             data: data.hits,
             status: "resolved",
@@ -39,7 +33,19 @@ export class ImageGallery extends PureComponent {
         })
         .catch((error) => this.setState({ error, status: "rejected" }));
     }
+    if (prevState.page !== this.state.page) {
+      console.log("apdatemount");
+      fetchData(this.props.query, this.state.page)
+        .then(({ data }) => {
+          this.setState((prevState) => ({
+            data: [...prevState.data, ...data.hits],
+            status: "resolved",
+          }));
+        })
+        .catch((error) => this.setState({ error, status: "rejected" }));
+    }
   }
+
   createItems = () => {
     return this.state.data.map((item) => (
       <ImageGalleryItem
@@ -49,7 +55,10 @@ export class ImageGallery extends PureComponent {
       ></ImageGalleryItem>
     ));
   };
+
   render() {
+    console.log(this.state.page);
+    console.log(this.state.data);
     const { status } = this.state;
     if (status === "idle") {
       return;
