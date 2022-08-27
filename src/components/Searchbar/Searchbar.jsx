@@ -14,7 +14,7 @@ export class SearchBar extends PureComponent {
   handleSubmit = (event) => {
     event.preventDefault();
     if (this.state.query.trim() === "") {
-      toast.error("Write");
+      toast.error("Empty");
       return;
     }
 

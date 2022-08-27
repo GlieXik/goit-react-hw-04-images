@@ -11,6 +11,7 @@ export class ImageGallery extends PureComponent {
     error: null,
     status: "idle",
     page: 1,
+    totalHits: null,
   };
   loadMore = (e) => {
     e.preventDefault();
@@ -23,23 +24,24 @@ export class ImageGallery extends PureComponent {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.query !== this.props.query) {
       this.setState({ status: "pending", page: 1 });
-      console.log("mount");
+
       fetchData(this.props.query)
         .then(({ data }) => {
           this.setState((prevState) => ({
             data: data.hits,
             status: "resolved",
+            totalHits: data.totalHits,
           }));
         })
         .catch((error) => this.setState({ error, status: "rejected" }));
     }
     if (prevState.page !== this.state.page) {
-      console.log("apdatemount");
       fetchData(this.props.query, this.state.page)
         .then(({ data }) => {
           this.setState((prevState) => ({
             data: [...prevState.data, ...data.hits],
             status: "resolved",
+            totalHits: data.totalHits,
           }));
         })
         .catch((error) => this.setState({ error, status: "rejected" }));
@@ -55,11 +57,13 @@ export class ImageGallery extends PureComponent {
       ></ImageGalleryItem>
     ));
   };
-
+  lastPage = (page, res) => {
+    if (Math.ceil(res / 12) === page) {
+      return true;
+    }
+  };
   render() {
-    console.log(this.state.page);
-    console.log(this.state.data);
-    const { status } = this.state;
+    const { status, page, totalHits } = this.state;
     if (status === "idle") {
       return;
     }
@@ -76,7 +80,11 @@ export class ImageGallery extends PureComponent {
       return (
         <>
           <SC.ImageGallery>{this.createItems()}</SC.ImageGallery>
-          <ButtonMore onClick={this.loadMore}></ButtonMore>
+          {this.lastPage(page, totalHits) === true ? (
+            ""
+          ) : (
+            <ButtonMore onClick={this.loadMore}></ButtonMore>
+          )}
         </>
       );
     }
