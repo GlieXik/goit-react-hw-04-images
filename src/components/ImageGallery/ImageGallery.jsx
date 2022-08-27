@@ -3,22 +3,39 @@ import { ImageGalleryItem } from "../ImageGalleryItem/ImageGalleryItem";
 import * as SC from "./ImageGallery.styled";
 import { fetchData } from "../../api/fetchData";
 import { Loader } from "../Loader/Loader";
+import { ButtonMore } from "../Buttons/ButtonMore";
+
 export class ImageGallery extends PureComponent {
   state = {
     data: null,
     error: null,
     status: "idle",
+    page: 1,
+  };
+  loadMore = (e) => {
+    e.preventDefault();
+
+    this.setState((prevState) => ({
+      page: prevState.page + 1,
+    }));
   };
   componentDidUpdate(prevProps, prevState) {
-    if (prevProps.query !== this.props.query) {
-      this.setState({ status: "pending" });
+    if (
+      prevState.page !== this.state.page ||
+      prevProps.query !== this.props.query
+    ) {
+      this.setState({ status: "pending", page: 1 });
 
-      fetchData(this.props.query)
+      fetchData(this.props.query, this.state.page)
         .then(({ data }) => {
-          this.setState({
+          // this.setState({
+          //   data: data.hits,
+          //   status: "resolved",
+          // });
+          this.setState((prevState) => ({
             data: data.hits,
             status: "resolved",
-          });
+          }));
         })
         .catch((error) => this.setState({ error, status: "rejected" }));
     }
@@ -33,9 +50,9 @@ export class ImageGallery extends PureComponent {
     ));
   };
   render() {
-    const { error, status } = this.state;
+    const { status } = this.state;
     if (status === "idle") {
-      return <h1>{error}</h1>;
+      return;
     }
 
     if (status === "pending") {
@@ -47,7 +64,12 @@ export class ImageGallery extends PureComponent {
     }
 
     if (status === "resolved") {
-      return <SC.ImageGallery>{this.createItems()}</SC.ImageGallery>;
+      return (
+        <>
+          <SC.ImageGallery>{this.createItems()}</SC.ImageGallery>
+          <ButtonMore onClick={this.loadMore}></ButtonMore>
+        </>
+      );
     }
   }
 }

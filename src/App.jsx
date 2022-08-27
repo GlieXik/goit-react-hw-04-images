@@ -12,8 +12,7 @@ export class App extends PureComponent {
     query: "",
   };
   handleFormSubmit = (query) => {
-    this.setState({ query });
-    console.log("setted", query);
+    this.setState({ query, page: 1 });
   };
   render() {
     const { query } = this.state;
