@@ -7,47 +7,13 @@ import { ButtonMore } from "../Buttons/ButtonMore";
 
 export const ImageGallery = ({ query }) => {
   const [res, setRes] = useState([]);
-  const [error, setError] = useState(null);
+  const [, setError] = useState(null);
   const [status, setStatus] = useState("idle");
   const [page, setPage] = useState(1);
   const [totalHits, setTotalHits] = useState(null);
 
-  const loadMore = (e) => {
-    e.preventDefault();
-    setPage(page + 1);
-  };
-
-  // componentDidUpdate(prevProps, prevState) {
-  //   if (prevProps.query !== this.props.query) {
-  //     this.setState({ status: "pending", page: 1 });
-
-  //     fetchData(this.props.query)
-  //       .then(({ data }) => {
-  //         this.setState((prevState) => ({
-  //           data: data.hits,
-  //           status: "resolved",
-  //           totalHits: data.totalHits,
-  //         }));
-  //       })
-  //       .catch((error) => this.setState({ error, status: "rejected" }));
-  //   }
-  //   if (prevState.page !== this.state.page) {
-  //     fetchData(this.props.query, this.state.page)
-  //       .then(({ data }) => {
-  //         this.setState((prevState) => ({
-  //           data: [...prevState.data, ...data.hits],
-  //           status: "resolved",
-  //           totalHits: data.totalHits,
-  //         }));
-  //       })
-  //       .catch((error) => this.setState({ error, status: "rejected" }));
-  //   }
-  // }
-  useEffect(() => {
-    if (!query) return;
-
-    if (page === 1) setStatus("pending");
-    fetchData(query, page)
+  const api = (q, p) => {
+    fetchData(q, p)
       .then(({ data }) => {
         setRes((prevstate) => [...prevstate, ...data.hits]);
         setStatus("resolved");
@@ -57,9 +23,19 @@ export const ImageGallery = ({ query }) => {
         setError(error);
         setStatus("rejected");
       });
-  }, [query, page]);
+  };
+  const loadMore = (e) => {
+    e.preventDefault();
+    setPage((prev) => prev + 1);
+  };
 
-  console.log(res);
+  useEffect(() => {
+    if (!query) return;
+
+    api(query, page);
+  }, [page, query]);
+
+  console.log(res, query, page);
   const createItems = () => {
     return res.map((item) => (
       <ImageGalleryItem
