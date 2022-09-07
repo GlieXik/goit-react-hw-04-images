@@ -28,12 +28,21 @@ export const ImageGallery = ({ query }) => {
     e.preventDefault();
     setPage((prev) => prev + 1);
   };
-
+  useEffect(() => {
+    if (page === 1) return;
+    api(query, page);
+    // eslint-disable-next-line
+  }, [page]);
   useEffect(() => {
     if (!query) return;
-
-    api(query, page);
-  }, [page, query]);
+    setStatus("pending");
+    api(query, 1);
+    return () => {
+      setRes([]);
+      setPage(1);
+      console.log("unmo");
+    };
+  }, [query]);
 
   const createItems = () => {
     return res.map((item) => (
