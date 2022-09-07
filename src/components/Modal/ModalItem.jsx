@@ -1,36 +1,33 @@
-import { PureComponent } from "react";
+import { useEffect } from "react";
 import * as SC from "./ModalItem.styled";
 
-export class ModalItem extends PureComponent {
-  componentDidMount() {
-    window.addEventListener("keydown", this.handleKeyDown);
-  }
-  componentWillUnmount() {
-    window.removeEventListener("keydown", this.handleKeyDown);
-  }
-  handleKeyDown = (e) => {
+export const ModalItem = ({ largeImageURL, onClose }) => {
+  const handleKeyDown = (e) => {
     if (e.code === "Escape") {
-      this.props.onClose();
+      onClose();
     }
   };
-  handleBackdrop = (e) => {
+  useEffect(() => {
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  });
+
+  const handleBackdrop = (e) => {
     if (e.currentTarget === e.target) {
-      this.props.onClose();
+      onClose();
     }
   };
-  render() {
-    const { largeImageURL, onClose } = this.props;
+  return (
+    <>
+      <SC.Overlay onClick={handleBackdrop}>
+        <SC.Modal>
+          <SC.SExitCross onClick={onClose}></SC.SExitCross>
 
-    return (
-      <>
-        <SC.Overlay onClick={this.handleBackdrop}>
-          <SC.Modal>
-            <SC.SExitCross onClick={onClose}></SC.SExitCross>
-
-            <img src={largeImageURL} alt="" />
-          </SC.Modal>
-        </SC.Overlay>
-      </>
-    );
-  }
-}
+          <img src={largeImageURL} alt="" />
+        </SC.Modal>
+      </SC.Overlay>
+    </>
+  );
+};

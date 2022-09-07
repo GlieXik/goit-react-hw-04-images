@@ -3,29 +3,30 @@ import { ThemeProvider } from "styled-components";
 import { theme } from "./utils/theme.jsx";
 import { SearchBar } from "./components/Searchbar/Searchbar";
 import { ImageGallery } from "./components/ImageGallery/ImageGallery";
-import { PureComponent } from "react";
+import { useState } from "react";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-export class App extends PureComponent {
-  state = {
-    query: "",
-  };
-  handleFormSubmit = (query) => {
-    this.setState({ query });
-  };
-  render() {
-    const { query } = this.state;
-    return (
-      <>
-        <ToastContainer autoClose={3000} />
+export const App = () => {
+  const [query, setQuery] = useState("");
 
-        <GlobalStyle />
-        <ThemeProvider theme={theme}>
-          <SearchBar onSubmit={this.handleFormSubmit}></SearchBar>
-          <ImageGallery query={query}></ImageGallery>
-        </ThemeProvider>
-      </>
-    );
-  }
-}
+  // const handleFormSubmit = (query) => {
+  //   this.setState({ query });
+  // };
+  const handleFormSubmit = (q) => {
+    console.log(q);
+    setQuery(q);
+  };
+
+  return (
+    <>
+      <ToastContainer autoClose={3000} />
+
+      <GlobalStyle />
+      <ThemeProvider theme={theme}>
+        <SearchBar onSubmit={handleFormSubmit}></SearchBar>
+        <ImageGallery query={query}></ImageGallery>
+      </ThemeProvider>
+    </>
+  );
+};

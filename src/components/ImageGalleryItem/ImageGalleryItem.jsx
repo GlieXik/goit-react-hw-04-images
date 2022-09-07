@@ -1,32 +1,28 @@
-import { PureComponent } from "react";
+import { useState } from "react";
 import { ModalItem } from "../Modal/ModalItem";
 import * as SC from "./ImageGalleryItem.styled";
 
-export class ImageGalleryItem extends PureComponent {
-  state = {
-    modal: false,
+export const ImageGalleryItem = ({ previewURL, restProps, largeImageURL }) => {
+  const [modal, setmodal] = useState(false);
+
+  const toggleModal = () => {
+    setmodal(!modal);
   };
 
-  toggleModal = () => {
-    this.setState(({ modal }) => ({ modal: !modal }));
-  };
-  render() {
-    const { previewURL, restProps, largeImageURL } = this.props;
-    return (
-      <>
-        <SC.ImageGalleryItem onClick={this.toggleModal}>
-          <SC.ImageGalleryItemImage src={previewURL} alt="" {...restProps} />
-        </SC.ImageGalleryItem>
-        {this.state.modal && (
-          <ModalItem
-            largeImageURL={largeImageURL}
-            onClose={this.toggleModal}
-          ></ModalItem>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <SC.ImageGalleryItem onClick={toggleModal}>
+        <SC.ImageGalleryItemImage src={previewURL} alt="" {...restProps} />
+      </SC.ImageGalleryItem>
+      {modal && (
+        <ModalItem
+          largeImageURL={largeImageURL}
+          onClose={toggleModal}
+        ></ModalItem>
+      )}
+    </>
+  );
+};
 
 // previewURL,
 // largeImageURL,

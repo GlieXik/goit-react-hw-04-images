@@ -1,39 +1,35 @@
-import { PureComponent } from "react";
+import { useState } from "react";
 import { ButtonSearch } from "../Buttons/ButtonSearch";
 import { InputValue } from "../InputValue/InputValue";
 import { SearchBarS, SearchFormS } from "./Searchbar.styled";
 import { toast } from "react-toastify";
 
-export class SearchBar extends PureComponent {
-  state = {
-    query: "",
+export const SearchBar = ({ onSubmit }) => {
+  const [query, setQuery] = useState("");
+
+  const handleQueryChange = (event) => {
+    setQuery(event.currentTarget.value.toLowerCase());
   };
-  handleQueryChange = (event) => {
-    this.setState({ query: event.currentTarget.value.toLowerCase() });
-  };
-  handleSubmit = (event) => {
+  const handleSubmit = (event) => {
     event.preventDefault();
-    if (this.state.query.trim() === "") {
+    if (query.trim() === "") {
       toast.error("Empty");
       return;
     }
 
-    this.props.onSubmit(this.state.query);
-    this.setState({ query: "" });
+    onSubmit(query);
+
+    setQuery("");
   };
-  render() {
-    return (
-      <>
-        <SearchBarS>
-          <SearchFormS onSubmit={this.handleSubmit}>
-            <ButtonSearch></ButtonSearch>
-            <InputValue
-              onChange={this.handleQueryChange}
-              value={this.state.query}
-            ></InputValue>
-          </SearchFormS>
-        </SearchBarS>
-      </>
-    );
-  }
-}
+
+  return (
+    <>
+      <SearchBarS>
+        <SearchFormS onSubmit={handleSubmit}>
+          <ButtonSearch></ButtonSearch>
+          <InputValue onChange={handleQueryChange} value={query}></InputValue>
+        </SearchFormS>
+      </SearchBarS>
+    </>
+  );
+};
