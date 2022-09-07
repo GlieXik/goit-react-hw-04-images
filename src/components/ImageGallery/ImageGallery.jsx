@@ -35,7 +35,6 @@ export const ImageGallery = ({ query }) => {
     api(query, page);
   }, [page, query]);
 
-  console.log(res, query, page);
   const createItems = () => {
     return res.map((item) => (
       <ImageGalleryItem
